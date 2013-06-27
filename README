@@ -1,0 +1,1 @@
+The Arduino code included is derived mostly from 'mifareclassic_memdump' and 'readMifare' with an added memcompare portion that finds the data written onto the card with 'NFC-Card-Write' and triggers another Arduino function (in this case an LED lighting up).
