@@ -32,11 +32,26 @@
 Adafruit_NFCShield_I2C nfc(IRQ, RESET);
 
 int led = 13;
+int count = 0;
 
 void setup(void) {
   // has to be fast to dump the entire memory contents!
   Serial.begin(115200);
+  
   pinMode(led,OUTPUT);
+  pinMode(12,OUTPUT);
+  pinMode(11,OUTPUT);
+  pinMode(10,OUTPUT);
+  pinMode(9,OUTPUT);
+  pinMode(8,OUTPUT);
+  pinMode(7,OUTPUT);
+  pinMode(6,OUTPUT);
+  pinMode(5,OUTPUT);
+  pinMode(4,OUTPUT);
+  pinMode(3,INPUT);
+  
+  
+  
   Serial.println("Looking for PN532...");
 
   nfc.begin();
@@ -58,6 +73,7 @@ void setup(void) {
   
 }
 
+void(* resetFunc) (void) = 0;
 
 void loop(void) {
   uint8_t success;                          // Flag to check if there was an error with the PN532
@@ -67,7 +83,7 @@ void loop(void) {
   bool authenticated = false;               // Flag to indicate if the sector is authenticated
   uint8_t data[16];                         // Array to store block data during reads
   
-
+digitalWrite(13,LOW);
 
   // Keyb on NDEF and Mifare Classic should be the same
   uint8_t keyuniversal[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
@@ -75,7 +91,9 @@ void loop(void) {
   // Wait for an ISO14443A type cards (Mifare, etc.).  When one is found
   // 'uid' will be populated with the UID, and uidLength will indicate
   // if the uid is 4 bytes (Mifare Classic) or 7 bytes (Mifare Ultralight)
+
   success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
+
 
   if (success) {
     // Display some basic information about the card
@@ -152,55 +170,80 @@ void loop(void) {
         uint8_t data5[16]={'b','o','b',0,0,0,0,0,0,0,0,0,0,0,0,0};
         uint8_t data6[16]={'j','o','e','l','l','e',0,0,0,0,0,0,0,0,0,0};
         uint8_t data7[16]={'j','a','m','e','s',0,0,0,0,0,0,0,0,0,0,0};
+        uint8_t data8[16]={'c','h','r','i','s','t','i','n','a',0,0,0,0,0,0,0};
+        uint8_t data9[16]={'c','o','l','l','e','e','n',0,0,0,0,0,0,0,0,0};
+        uint8_t data10[16]={'m','i','k','a','y','l','a',0,0,0,0,0,0,0,0,0};
 
-        switch(){
-          case memcmp(data1,data,16) == 0:
+        
+        if (memcmp(data1,data,16) == 0){
             Serial.println("Hello Joe");
+            count++;
             digitalWrite(13,HIGH);
             delay(1000);
-          break;
-
-          case memcmp(data2,data,16) == 0:
+        }
+         
+          if (memcmp(data2,data,16) == 0){
             Serial.println("Hello Laurence");
+            count++;
             digitalWrite(12,HIGH);
             delay(500);
-          break;
+          }
 
-          case memcmp(data3,data,16) == 0:
+          if(memcmp(data3,data,16) == 0){
             Serial.println("Hello Rob");
+            count++;
             digitalWrite(11,HIGH);
             delay(100);
-          break;
+          }
 
-          case memcmp(data4,data,16) == 0:
+          if(memcmp(data4,data,16) == 0){
             Serial.println("Hello Sloan");
+            count++;
             digitalWrite(10,HIGH);
             delay(700);
-          break;
+          }
 
-          case memcmp(data5,data,16) == 0:
+          if(memcmp(data5,data,16) == 0){
             Serial.println("Hello Bob");
+            count++;
             digitalWrite(9,HIGH);
             delay(50);
-          break;
+          }
 
-          case memcmp(data6,data,16) == 0:
+          if(memcmp(data6,data,16) == 0){
             Serial.println("Hello Joelle");
+            count++;
             digitalWrite(8,HIGH);
             delay(900);
-          break;
+          }
 
-          case memcmp(data7,data,16) == 0:
+          if(memcmp(data7,data,16) == 0){
             Serial.println("Hello James");
+            count++;
             digitalWrite(7,HIGH);
             delay(200);
-          break;
-
-          default:
-            Serial.println("Verification failed");
-            digitalWrite(13,LOW);
-            Serial.println("");
-        }
+          }
+          
+          if(memcmp(data8,data,16) == 0){
+            Serial.println("Hello Christina");
+            count++;
+            digitalWrite(6,HIGH);
+            delay(750);
+          }
+          
+          if(memcmp(data9,data,16) == 0){
+            Serial.println("Hello Colleen");
+            count++;
+            digitalWrite(5,HIGH);
+            delay(350);
+          }
+          
+          if(memcmp(data10,data,16) == 0){
+            Serial.println("Hello Mikayla");
+            count++;
+            digitalWrite(4,HIGH);
+            delay(800);
+          }
 
   /*
         if (memcmp(data1,data,16) == 0)
@@ -244,25 +287,38 @@ void loop(void) {
         }
       }
     }
+  
 
     else
     {
       Serial.println("Ooops ... this doesn't seem to be a Mifare Classic card!");
     }
+    
+    if(count >= 2){
+      Serial.println("You may only have 2 players at a time");
+      digitalWrite(13,HIGH);
+      Serial.end();
+    }
+    delay(10000);
+
+    int sensorValue = digitalRead(3);
+    // resets the card reader when it gets a digital HIGH signal at pin 3
+    if(sensorValue == 1){
+      resetFunc();
+    }
+
 
   // Wait a bit before trying again
-  Serial.println("\n\nSend a character to run the mem dumper for Block ");Serial.print(currentblock,DEC);Serial.print(" again!");
+  //Serial.println("\n\nSend a character to run the mem dumper for Block ");Serial.print(currentblock,DEC);Serial.print(" again!");
+ // Serial.flush();
+ // while (!Serial.available());
+ // while (Serial.available()) {
+ // Serial.read();
+ // }
   Serial.flush();
-  while (!Serial.available());
-  while (Serial.available()) {
-  Serial.read();
-  }
-  Serial.flush();
+  
+  delay(5000);
+  Serial.println("next player log in");
+  
 }
-
-
-
-
-
-
-
+}
