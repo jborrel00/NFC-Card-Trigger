@@ -146,7 +146,63 @@ void loop(void) {
         //////// if data1=data, print Verification succeeded and flash LED on pin 13
         Serial.println("Verifying...");
         uint8_t data1[16]={'j','o','e',0,0,0,0,0,0,0,0,0,0,0,0,0};
-  
+        uint8_t data2[16]={'l','a','u','r','e','n','c','e',0,0,0,0,0,0,0,0};
+        uint8_t data3[16]={'r','o','b',0,0,0,0,0,0,0,0,0,0,0,0,0};
+        uint8_t data4[16]={'s','l','o','a','n',0,0,0,0,0,0,0,0,0,0,0};
+        uint8_t data5[16]={'b','o','b',0,0,0,0,0,0,0,0,0,0,0,0,0};
+        uint8_t data6[16]={'j','o','e','l','l','e',0,0,0,0,0,0,0,0,0,0};
+        uint8_t data7[16]={'j','a','m','e','s',0,0,0,0,0,0,0,0,0,0,0};
+
+        switch(){
+          case memcmp(data1,data,16) == 0:
+            Serial.println("Hello Joe");
+            digitalWrite(13,HIGH);
+            delay(1000);
+          break;
+
+          case memcmp(data2,data,16) == 0:
+            Serial.println("Hello Laurence");
+            digitalWrite(12,HIGH);
+            delay(500);
+          break;
+
+          case memcmp(data3,data,16) == 0:
+            Serial.println("Hello Rob");
+            digitalWrite(11,HIGH);
+            delay(100);
+          break;
+
+          case memcmp(data4,data,16) == 0:
+            Serial.println("Hello Sloan");
+            digitalWrite(10,HIGH);
+            delay(700);
+          break;
+
+          case memcmp(data5,data,16) == 0:
+            Serial.println("Hello Bob");
+            digitalWrite(9,HIGH);
+            delay(50);
+          break;
+
+          case memcmp(data6,data,16) == 0:
+            Serial.println("Hello Joelle");
+            digitalWrite(8,HIGH);
+            delay(900);
+          break;
+
+          case memcmp(data7,data,16) == 0:
+            Serial.println("Hello James");
+            digitalWrite(7,HIGH);
+            delay(200);
+          break;
+
+          default:
+            Serial.println("Verification failed");
+            digitalWrite(13,LOW);
+            Serial.println("");
+        }
+
+  /*
         if (memcmp(data1,data,16) == 0)
         {
          Serial.println("Verification succeeded");
@@ -163,7 +219,7 @@ void loop(void) {
          }
 
         }
-        
+        */
           if (success)
           {
             // Read successful
@@ -188,6 +244,7 @@ void loop(void) {
         }
       }
     }
+
     else
     {
       Serial.println("Ooops ... this doesn't seem to be a Mifare Classic card!");
