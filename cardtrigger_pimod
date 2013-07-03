@@ -32,12 +32,14 @@
 Adafruit_NFCShield_I2C nfc(IRQ, RESET);
 
 int led = 13;
+int button_left = 10;
+int button_right = 11;
 int count = 0;
 
 void setup(void) {
   // has to be fast to dump the entire memory contents!
   Serial.begin(115200);
-  
+  /*
   pinMode(led,OUTPUT);
   pinMode(12,OUTPUT);
   pinMode(11,OUTPUT);
@@ -49,8 +51,13 @@ void setup(void) {
   pinMode(5,OUTPUT);
   pinMode(4,OUTPUT);
   pinMode(3,INPUT);
+  */
   
+  pinMode(11,INPUT);
+  pinMode(10,INPUT);
   
+  int leftside = 0;
+  int rightside = 0;
   
   Serial.println("Looking for PN532...");
 
@@ -83,7 +90,7 @@ void loop(void) {
   bool authenticated = false;               // Flag to indicate if the sector is authenticated
   uint8_t data[16];                         // Array to store block data during reads
   
-digitalWrite(13,LOW);
+//digitalWrite(13,LOW);
 
   // Keyb on NDEF and Mifare Classic should be the same
   uint8_t keyuniversal[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
@@ -162,7 +169,8 @@ digitalWrite(13,LOW);
         //////////////////////////////////////// start memcmp - This portion of code created by lzemail and posted to http://www.adafruit.com/forums/viewtopic.php?f=31&p=194042 at 3:51 pm on Sat Apr 20, 2013
         //////// compare data1 with the content of block 4 "data"
         //////// if data1=data, print Verification succeeded and flash LED on pin 13
-        Serial.println("Verifying...");
+        
+        //Serial.println("Verifying...");
         uint8_t data1[16]={'j','o','e',0,0,0,0,0,0,0,0,0,0,0,0,0};
         uint8_t data2[16]={'l','a','u','r','e','n','c','e',0,0,0,0,0,0,0,0};
         uint8_t data3[16]={'r','o','b',0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -174,75 +182,148 @@ digitalWrite(13,LOW);
         uint8_t data9[16]={'c','o','l','l','e','e','n',0,0,0,0,0,0,0,0,0};
         uint8_t data10[16]={'m','i','k','a','y','l','a',0,0,0,0,0,0,0,0,0};
 
+        int leftside = digitalRead(button_left);
+        int rightside = digitalRead(button_right);
+        const char* name;
         
         if (memcmp(data1,data,16) == 0){
-            Serial.println("Hello Joe");
+            name="Joe";
+            Serial.println("Hello ");Serial.println(name);
             count++;
-            digitalWrite(13,HIGH);
-            delay(1000);
+            if(rightside == HIGH){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside == HIGH){
+              Serial.println(name);Serial.println("on left");
+            }
+            //digitalWrite(13,HIGH);
+            //delay(1000);
         }
          
           if (memcmp(data2,data,16) == 0){
-            Serial.println("Hello Laurence");
+            name="Laurence";
+            Serial.println("Hello ");Serial.println(name);
             count++;
-            digitalWrite(12,HIGH);
-            delay(500);
+            if(rightside == HIGH){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside == HIGH){
+              Serial.println(name);Serial.println("on left");
+            }
+            //digitalWrite(12,HIGH);
+            //delay(500);
           }
 
           if(memcmp(data3,data,16) == 0){
-            Serial.println("Hello Rob");
+            name="Rob";
+            Serial.println("Hello ");Serial.println(name);
             count++;
-            digitalWrite(11,HIGH);
-            delay(100);
+            if(rightside == HIGH){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside == HIGH){
+              Serial.println(name);Serial.println("on left");
+            }
+            //digitalWrite(11,HIGH);
+            //delay(100);
           }
 
           if(memcmp(data4,data,16) == 0){
-            Serial.println("Hello Sloan");
+            name="Sloan";
+            Serial.println("Hello ");Serial.println(name);
             count++;
-            digitalWrite(10,HIGH);
-            delay(700);
+            if(rightside == HIGH){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside == HIGH){
+              Serial.println(name);Serial.println("on left");
+            }
+            //digitalWrite(10,HIGH);
+            //delay(700);
           }
 
           if(memcmp(data5,data,16) == 0){
-            Serial.println("Hello Bob");
+            name="Bob";
+            Serial.println("Hello ");Serial.println(name);
             count++;
-            digitalWrite(9,HIGH);
-            delay(50);
+            if(rightside == HIGH){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside == HIGH){
+              Serial.println(name);Serial.println("on left");
+            }
+            //digitalWrite(9,HIGH);
+            //delay(50);
           }
 
           if(memcmp(data6,data,16) == 0){
-            Serial.println("Hello Joelle");
+            name="Joelle";
+            Serial.println("Hello ");Serial.println(name);
             count++;
-            digitalWrite(8,HIGH);
-            delay(900);
+            if(rightside == HIGH){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside == HIGH){
+              Serial.println(name);Serial.println("on left");
+            }
+            //digitalWrite(8,HIGH);
+            //delay(900);
           }
 
           if(memcmp(data7,data,16) == 0){
-            Serial.println("Hello James");
+            name="James";
+            Serial.println("Hello ");Serial.println(name);
             count++;
-            digitalWrite(7,HIGH);
-            delay(200);
+            if(rightside == HIGH){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside == HIGH){
+              Serial.println(name);Serial.println("on left");
+            }
+            //digitalWrite(7,HIGH);
+            //delay(200);
           }
           
           if(memcmp(data8,data,16) == 0){
-            Serial.println("Hello Christina");
+            name="Christina";
+            Serial.println("Hello ");Serial.println(name);
             count++;
-            digitalWrite(6,HIGH);
-            delay(750);
+            if(rightside == HIGH){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside == HIGH){
+              Serial.println(name);Serial.println("on left");
+            }
+            //digitalWrite(6,HIGH);
+            //delay(750);
           }
           
           if(memcmp(data9,data,16) == 0){
-            Serial.println("Hello Colleen");
+            name="Colleen";
+            Serial.println("Hello ");Serial.println(name);
             count++;
-            digitalWrite(5,HIGH);
-            delay(350);
+            if(rightside == HIGH){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside == HIGH){
+              Serial.println(name);Serial.println("on left");
+            }
+            //digitalWrite(5,HIGH);
+            //delay(350);
           }
           
           if(memcmp(data10,data,16) == 0){
-            Serial.println("Hello Mikayla");
+            name="Mikayla";
+            Serial.println("Hello ");Serial.println(name);
             count++;
-            digitalWrite(4,HIGH);
-            delay(800);
+            if(rightside == HIGH){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside == HIGH){
+              Serial.println(name);Serial.println("on left");
+            }
+            //digitalWrite(4,HIGH);
+            //delay(800);
           }
 
   /*
@@ -296,13 +377,13 @@ digitalWrite(13,LOW);
     
     if(count >= 2){
       Serial.println("You may only have 2 players at a time");
-      digitalWrite(13,HIGH);
+      //digitalWrite(13,HIGH);
       Serial.end();
     }
     delay(10000);
 
     int sensorValue = digitalRead(3);
-    // resets the card reader when it gets a digital HIGH signal at pin 3
+    // resets the card reader when it gets a digital HIGH signal at pin 3, the signal would be coming from an outside source to signal the end of the game
     if(sensorValue == 1){
       resetFunc();
     }
