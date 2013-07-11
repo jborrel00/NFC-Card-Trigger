@@ -1,0 +1,501 @@
+/**************************************************************************/
+/*!
+    @file     mifareclassic_memdump.pde
+    @author   Adafruit Industries
+  @license  BSD (see license.txt)
+
+    This example attempts to dump the contents of a Mifare Classic 1K card
+
+    Note that you need the baud rate to be 115200 because we need to print
+  out the data and read from the card at the same time!
+
+    This is an example sketch for the Adafruit PN532 NFC/RFID breakout boards
+    This library works with the Adafruit NFC breakout
+      ----> https://www.adafruit.com/products/364
+
+    Check out the links above for our tutorials and wiring diagrams
+    These chips use I2C to communicate
+
+    Adafruit invests time and resources providing this open source code,
+    please support Adafruit and open-source hardware by purchasing
+    products from Adafruit!
+
+*/
+/**************************************************************************/
+
+//make sure GPIO from Pi is HIGH to reset pin on arduino. This allows the function to run. When the game has ended the GPIO will go LOW and then HIGH right away, resetting the arduino and letting the program run again.
+
+#include <Wire.h>
+#include <Adafruit_NFCShield_I2C.h>
+#include <CapacitiveSensor.h>
+
+#define IRQ   (2)
+#define RESET (3)  // Not connected by default on the NFC Shield
+
+Adafruit_NFCShield_I2C nfc(IRQ, RESET);
+
+int led = 13;
+//int button_left = 10; for real buttons
+//int button_right = 11; for real buttons
+int count = 0;
+int sensor = 12;
+
+CapacitiveSensor   cs_4_6 = CapacitiveSensor(4,6);        // 10M resistor between pins 4 & 6, pin 6 is sensor pin
+CapacitiveSensor   cs_8_10 = CapacitiveSensor(8,10);      // 10M resistor between pins 8 & 10, pin 10 is sensor pin
+
+void setup(void) {
+  
+  /*
+  pinMode(led,OUTPUT);
+  pinMode(12,OUTPUT);
+  pinMode(11,OUTPUT);
+  pinMode(10,OUTPUT);
+  pinMode(9,OUTPUT);
+  pinMode(8,OUTPUT);
+  pinMode(7,OUTPUT);
+  pinMode(6,OUTPUT);
+  pinMode(5,OUTPUT);
+  pinMode(4,OUTPUT);
+  pinMode(3,INPUT);
+  */
+  
+  pinMode(sensor,INPUT);
+  
+  //pinMode(11,INPUT);
+  //pinMode(10,INPUT);
+  ///////for real buttons///////
+  //int leftside = 0;
+  //int rightside = 0;
+  
+  Serial.println("Looking for PN532...");
+
+  nfc.begin();
+
+  uint32_t versiondata = nfc.getFirmwareVersion();
+  if (! versiondata) {
+    Serial.print("Didn't find PN53x board");
+    while (1); // halt
+  }
+  // Got ok data, print it out!
+  //Serial.print("Found chip PN5"); Serial.println((versiondata>>24) & 0xFF, HEX);
+  //Serial.print("Firmware ver. "); Serial.print((versiondata>>16) & 0xFF, DEC);
+  //Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
+
+  // configure board to read RFID tags
+  nfc.SAMConfig();
+
+cs_4_6.set_CS_AutocaL_Millis(0xFFFFFFFF);
+  cs_8_10.set_CS_AutocaL_Millis(0xFFFFFFFF);
+  Serial.begin(115200);
+  Serial.println("pick a side");
+  delay(2000);
+  int j=1;
+  while(j==1){
+  int left=cs_4_6.capacitiveSensor(30);
+  int right=cs_8_10.capacitiveSensor(30);
+  if(left < 100 && right < 100){
+  //Serial.println(left);
+  //Serial.println(right);
+}
+ if(left > 100){
+          Serial.println("left");
+          j=2;
+        }
+        if(right > 100){
+          Serial.println("right");
+          j=2;
+        }
+        if(left > 100 && right > 100){
+          Serial.println("invalid");
+        }
+        if(left > 100 || right > 100){
+
+  Serial.println("Waiting for an ISO14443A Card ...");
+  j=2;
+  
+} 
+}
+}
+
+void(* resetFunc) (void) = 0;
+
+void loop(void) {
+  uint8_t success;                          // Flag to check if there was an error with the PN532
+  uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };  // Buffer to store the returned UID
+  uint8_t uidLength;                        // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
+  uint8_t currentblock;                     // Counter to keep track of which block we're on
+  bool authenticated = false;               // Flag to indicate if the sector is authenticated
+  uint8_t data[16];                         // Array to store block data during reads
+  
+//digitalWrite(13,LOW);
+
+  // Keyb on NDEF and Mifare Classic should be the same
+  uint8_t keyuniversal[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+
+  // Wait for an ISO14443A type cards (Mifare, etc.).  When one is found
+  // 'uid' will be populated with the UID, and uidLength will indicate
+  // if the uid is 4 bytes (Mifare Classic) or 7 bytes (Mifare Ultralight)
+
+  success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
+
+
+  if (success) {
+    // Display some basic information about the card
+    //Serial.println("Found an ISO14443A card");
+    //Serial.print("  UID Length: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
+    //Serial.print("  UID Value: ");
+    //nfc.PrintHex(uid, uidLength);
+    //Serial.println("");
+
+    if (uidLength == 4)
+    {
+      // We probably have a Mifare Classic card ...
+      //Serial.println("Seems to be a Mifare Classic card (4 byte UID)");
+
+      // Now we try to go through all 16 sectors (each having 4 blocks)
+      // authenticating each sector, and then dumping the blocks
+      
+      for (currentblock = 6; currentblock < 7; currentblock++)
+      {
+        // Check if this is a new block so that we can reauthenticate
+        if (nfc.mifareclassic_IsFirstBlock(currentblock)) authenticated = false;
+
+        // If the sector hasn't been authenticated, do so first
+        if (!authenticated)
+        {
+          // Starting of a new sector ... try to to authenticate
+          //Serial.print("------------------------Sector ");Serial.print(currentblock/4, DEC);Serial.println("-------------------------");
+          if (currentblock == 0)
+          {
+              // This will be 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF for Mifare Classic (non-NDEF!)
+              // or 0xA0 0xA1 0xA2 0xA3 0xA4 0xA5 for NDEF formatted cards using key a,
+              // but keyb should be the same for both (0xFF 0xFF 0xFF 0xFF 0xFF 0xFF)
+              success = nfc.mifareclassic_AuthenticateBlock (uid, uidLength, currentblock, 1, keyuniversal);
+          }
+          else
+          {
+              // This will be 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF for Mifare Classic (non-NDEF!)
+              // or 0xD3 0xF7 0xD3 0xF7 0xD3 0xF7 for NDEF formatted cards using key a,
+              // but keyb should be the same for both (0xFF 0xFF 0xFF 0xFF 0xFF 0xFF)
+              success = nfc.mifareclassic_AuthenticateBlock (uid, uidLength, currentblock, 1, keyuniversal);
+          }
+          if (success)
+          {
+            authenticated = true;
+          }
+          else
+          {
+            Serial.println("Authentication error");
+          }
+        }
+        // If we're still not authenticated just skip the block
+        if (!authenticated)
+        {
+          Serial.print("Block ");Serial.print(currentblock, DEC);Serial.println(" unable to authenticate");
+        }
+        else
+        {
+          // Authenticated ... we should be able to read the block now
+          // Dump the data into the 'data' array
+          
+          success = nfc.mifareclassic_ReadDataBlock(currentblock, data);
+          //Serial.println(success);
+          //Serial.println(currentblock, DEC);
+          //Serial.println(data, DEC)
+          //nfc.PrintHexChar(data, 16);
+        //////////////////////////////////////// start memcmp - This portion of code created by lzemail and posted to http://www.adafruit.com/forums/viewtopic.php?f=31&p=194042 at 3:51 pm on Sat Apr 20, 2013
+        //////// compare data1 with the content of block 4 "data"
+        //////// if data1=data, print Verification succeeded and flash LED on pin 13
+        
+        //Serial.println("Verifying...");
+        uint8_t data1[16]={'j','o','e',0,0,0,0,0,0,0,0,0,0,0,0,0};
+        uint8_t data2[16]={'l','a','u','r','e','n','c','e',0,0,0,0,0,0,0,0};
+        uint8_t data3[16]={'r','o','b',0,0,0,0,0,0,0,0,0,0,0,0,0};
+        uint8_t data4[16]={'s','l','o','a','n',0,0,0,0,0,0,0,0,0,0,0};
+        uint8_t data5[16]={'b','o','b',0,0,0,0,0,0,0,0,0,0,0,0,0};
+        uint8_t data6[16]={'j','o','e','l','l','e',0,0,0,0,0,0,0,0,0,0};
+        uint8_t data7[16]={'j','a','m','e','s',0,0,0,0,0,0,0,0,0,0,0};
+        uint8_t data8[16]={'c','h','r','i','s','t','i','n','a',0,0,0,0,0,0,0};
+        uint8_t data9[16]={'c','o','l','l','e','e','n',0,0,0,0,0,0,0,0,0};
+        uint8_t data10[16]={'m','i','k','a','y','l','a',0,0,0,0,0,0,0,0,0};
+
+        //int leftside = digitalRead(button_left); for real buttons
+        //int rightside = digitalRead(button_right); for real buttons
+        //left side button is in pin 10, right side button is in pin 11
+        //const char* name;
+
+        
+        String name;
+        
+        if (memcmp(data1,data,16) == 0){
+            name="Joe";
+            Serial.println("Hello ");Serial.println(name);
+            count++;
+            /*
+            if(rightside > 100){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside > 100){
+              Serial.println(name);Serial.println("on left");
+            }
+            if(leftside > 100 && rightside > 100){
+              Serial.println("invalid");
+            }
+            */
+            //digitalWrite(13,HIGH);
+            //delay(1000);
+        }
+         
+          if (memcmp(data2,data,16) == 0){
+            name="Laurence";
+            Serial.println("Hello ");Serial.println(name);
+            count++;
+            /*
+            if(rightside > 100){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside > 100){
+              Serial.println(name);Serial.println("on left");
+            }
+            if(leftside > 100 && rightside > 100){
+              Serial.println("invalid");
+            }
+            */
+            //digitalWrite(12,HIGH);
+            //delay(500);
+          }
+
+          if(memcmp(data3,data,16) == 0){
+            name="Rob";
+            Serial.println("Hello ");Serial.println(name);
+            count++;
+            /*
+            if(rightside > 100){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside > 100){
+              Serial.println(name);Serial.println("on left");
+            }
+            if(leftside > 100 && rightside > 100){
+              Serial.println("invalid");
+            }
+            */
+            //digitalWrite(11,HIGH);
+            //delay(100);
+          }
+
+          if(memcmp(data4,data,16) == 0){
+            name="Sloan";
+            Serial.println("Hello ");Serial.println(name);
+            count++;
+            /*
+            if(rightside > 100){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside > 100){
+              Serial.println(name);Serial.println("on left");
+            }
+            if(leftside > 100 && rightside > 100){
+              Serial.println("invalid");
+            }
+            */
+            //digitalWrite(10,HIGH);
+            //delay(700);
+          }
+
+          if(memcmp(data5,data,16) == 0){
+            name="Bob";
+            Serial.println("Hello ");Serial.println(name);
+            count++;
+            /*
+            if(rightside > 100){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside > 100){
+              Serial.println(name);Serial.println("on left");
+            }
+            if(leftside > 100 && rightside > 100){
+              Serial.println("invalid");
+            }
+            */
+            //digitalWrite(9,HIGH);
+            //delay(50);
+          }
+
+          if(memcmp(data6,data,16) == 0){
+            name="Joelle";
+            Serial.println("Hello ");Serial.println(name);
+            count++;
+            /*
+            if(rightside > 100){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside > 100){
+              Serial.println(name);Serial.println("on left");
+            }
+            if(leftside > 100 && rightside > 100){
+              Serial.println("invalid");
+            }
+            */
+            //digitalWrite(8,HIGH);
+            //delay(900);
+          }
+
+          if(memcmp(data7,data,16) == 0){
+            name="James";
+            Serial.println("Hello ");Serial.println(name);
+            count++;
+            /*
+            if(rightside > 100){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside > 100){
+              Serial.println(name);Serial.println("on left");
+            }
+            if(leftside > 100 && rightside > 100){
+              Serial.println("invalid");
+            }
+            */
+            //digitalWrite(7,HIGH);
+            //delay(200);
+          }
+          
+          if(memcmp(data8,data,16) == 0){
+            name="Christina";
+            Serial.println("Hello ");Serial.println(name);
+            count++;
+            /*
+            if(rightside > 100){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside > 100){
+              Serial.println(name);Serial.println("on left");
+            }
+            if(leftside > 100 && rightside > 100){
+              Serial.println("invalid");
+            }
+            */
+            //digitalWrite(6,HIGH);
+            //delay(750);
+          }
+          
+          if(memcmp(data9,data,16) == 0){
+            name="Colleen";
+            Serial.println("Hello ");Serial.println(name);
+            count++;
+            /*
+            if(rightside > 100){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside > 100){
+              Serial.println(name);Serial.println("on left");
+            }
+            if(leftside > 100 && rightside > 100){
+              Serial.println("invalid");
+            }
+            */
+            //digitalWrite(5,HIGH);
+            //delay(350);
+          }
+          
+          if(memcmp(data10,data,16) == 0){
+            name="Mikayla";
+            Serial.println("Hello ");Serial.println(name);
+            count++;
+            /*
+            if(rightside > 100){
+              Serial.println(name);Serial.println("on right");
+            }
+            if(leftside > 100){
+              Serial.println(name);Serial.println("on left");
+            }
+            if(leftside > 100 && rightside > 100){
+              Serial.println("invalid");
+            }
+            */
+            //digitalWrite(4,HIGH);
+            //delay(800);
+          }
+
+  /*
+        if (memcmp(data1,data,16) == 0)
+        {
+         Serial.println("Verification succeeded");
+        digitalWrite(13, HIGH);
+        delay(500);
+        digitalWrite(13, LOW);
+        Serial.println("");
+        }
+        else
+        {
+         Serial.println("Verification failed");
+         digitalWrite(13,LOW);
+         Serial.println("");
+         }
+
+        
+        */
+          if (success)
+          {
+//            // Read successful
+//            Serial.print("Block ");Serial.print(currentblock, DEC);
+//            if (currentblock < 10)
+//            {
+//              Serial.print("  ");
+//            }
+//            else
+//            {
+//              Serial.print(" ");
+//            }
+//            // Dump the raw data
+//            nfc.PrintHexChar(data, 16);
+          }
+          else
+          {
+            // Oops ... something happened
+            Serial.print("Block ");Serial.print(currentblock, DEC);
+            Serial.println(" unable to read this block");
+          }
+        }
+      }
+    }
+  
+
+    else
+    {
+      Serial.println("Ooops ... this doesn't seem to be a Mifare Classic card!");
+    }
+  
+    int sensorValue = digitalRead(sensor); //
+    //Serial.println(sensorValue);
+    int k=1;
+    // resets the card reader when it gets a HGIGH the signal would be coming from an outside source (RPi) to signal the end of the game
+    if(count >= 2){
+      Serial.println("You may only have 2 players at a time");
+      //digitalWrite(13,HIGH);
+      while(k==1){
+      if (sensorValue < 100){
+        Serial.end();
+      }
+      else{
+        k=2;
+        resetFunc(); //I don't think this can work because Serial.end() gets called to ensure no more transmission during a game
+      }
+    }
+    }
+    delay(1000);
+
+  // Wait a bit before trying again
+  //Serial.println("\n\nSend a character to run the mem dumper for Block ");Serial.print(currentblock,DEC);Serial.print(" again!");
+ // Serial.flush();
+ // while (!Serial.available());
+ // while (Serial.available()) {
+ // Serial.read();
+ // }
+  Serial.flush();
+  
+  delay(500);
+  Serial.println("next player log in");
+  
+}
+}
