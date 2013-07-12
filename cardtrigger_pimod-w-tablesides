@@ -217,7 +217,7 @@ void loop(void) {
         uint8_t data7[16]={'j','a','m','e','s',0,0,0,0,0,0,0,0,0,0,0};
         uint8_t data8[16]={'c','h','r','i','s','t','i','n','a',0,0,0,0,0,0,0};
         uint8_t data9[16]={'c','o','l','l','e','e','n',0,0,0,0,0,0,0,0,0};
-        uint8_t data10[16]={'m','i','k','a','y','l','a',0,0,0,0,0,0,0,0,0};
+        uint8_t data10[16]={'n','a','e',0,0,0,0,0,0,0,0,0,0,0,0,0};
 
         //int leftside = digitalRead(button_left); for real buttons
         //int rightside = digitalRead(button_right); for real buttons
@@ -399,7 +399,7 @@ void loop(void) {
           }
           
           if(memcmp(data10,data,16) == 0){
-            name="Mikayla";
+            name="Nae";
             Serial.println("Hello ");Serial.println(name);
             count++;
             /*
