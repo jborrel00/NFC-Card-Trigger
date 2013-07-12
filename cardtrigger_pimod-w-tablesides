@@ -38,7 +38,7 @@ int led = 13;
 //int button_left = 10; for real buttons
 //int button_right = 11; for real buttons
 int count = 0;
-int sensor = 12;
+//int sensor = 12; for code reset - not currently needed
 
 CapacitiveSensor   cs_4_6 = CapacitiveSensor(4,6);        // 10M resistor between pins 4 & 6, pin 6 is sensor pin
 CapacitiveSensor   cs_8_10 = CapacitiveSensor(8,10);      // 10M resistor between pins 8 & 10, pin 10 is sensor pin
@@ -59,7 +59,7 @@ void setup(void) {
   pinMode(3,INPUT);
   */
   
-  pinMode(sensor,INPUT);
+  //pinMode(sensor,INPUT); for code reset - not currently needed
   
   //pinMode(11,INPUT);
   //pinMode(10,INPUT);
@@ -84,7 +84,7 @@ void setup(void) {
   // configure board to read RFID tags
   nfc.SAMConfig();
 
-cs_4_6.set_CS_AutocaL_Millis(0xFFFFFFFF);
+  cs_4_6.set_CS_AutocaL_Millis(0xFFFFFFFF);
   cs_8_10.set_CS_AutocaL_Millis(0xFFFFFFFF);
   Serial.begin(115200);
   Serial.println("pick a side");
