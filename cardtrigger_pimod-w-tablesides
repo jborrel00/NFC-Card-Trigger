@@ -202,7 +202,7 @@ void loop(void) {
           //Serial.println(success);
           //Serial.println(currentblock, DEC);
           //Serial.println(data, DEC)
-          //nfc.PrintHexChar(data, 16);
+          nfc.PrintHexChar(data, 16);
         //////////////////////////////////////// start memcmp - This portion of code created by lzemail and posted to http://www.adafruit.com/forums/viewtopic.php?f=31&p=194042 at 3:51 pm on Sat Apr 20, 2013
         //////// compare data1 with the content of block 4 "data"
         //////// if data1=data, print Verification succeeded and flash LED on pin 13
