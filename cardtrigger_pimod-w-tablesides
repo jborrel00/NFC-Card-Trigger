@@ -466,22 +466,22 @@ void loop(void) {
       Serial.println("Ooops ... this doesn't seem to be a Mifare Classic card!");
     }
   
-    int sensorValue = digitalRead(sensor); //
+    //int sensorValue = digitalRead(sensor); //
     //Serial.println(sensorValue);
     int k=1;
     // resets the card reader when it gets a HGIGH the signal would be coming from an outside source (RPi) to signal the end of the game
     if(count >= 2){
       Serial.println("You may only have 2 players at a time");
       //digitalWrite(13,HIGH);
-      while(k==1){
-      if (sensorValue < 100){
-        Serial.end();
-      }
-      else{
-        k=2;
-        resetFunc(); //I don't think this can work because Serial.end() gets called to ensure no more transmission during a game
-      }
-    }
+//      while(k==1){
+//      //if (sensorValue < 100){
+//        Serial.end();
+//      //}
+//      else{
+//        k=2;
+//        resetFunc(); //I don't think this can work because Serial.end() gets called to ensure no more transmission during a game
+//      }
+//    }
     }
     delay(1000);
 
