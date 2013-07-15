@@ -475,7 +475,7 @@ void loop(void) {
       //digitalWrite(13,HIGH);
 //      while(k==1){
 //      //if (sensorValue < 100){
-//        Serial.end();
+         Serial.end();
 //      //}
 //      else{
 //        k=2;
