@@ -87,34 +87,34 @@ void setup(void) {
   cs_4_6.set_CS_AutocaL_Millis(0xFFFFFFFF);
   cs_8_10.set_CS_AutocaL_Millis(0xFFFFFFFF);
   Serial.begin(115200);
-  //Serial.println("pick a side");
+  Serial.println("pick a side");
   delay(2000);
   int j=1;
-//  while(j==1){
-//  int left=cs_4_6.capacitiveSensor(30);
-//  int right=cs_8_10.capacitiveSensor(30);
-//  if(left < 100 && right < 100){
-//  //Serial.println(left);
-//  //Serial.println(right);
-//}
-// if(left > 100){
-//          //Serial.println("left");
-//          j=2;
-//        }
-//        if(right > 100){
-//          //Serial.println("right");
-//          j=2;
-//        }
-//        if(left > 100 && right > 100){
-//          //Serial.println("invalid");
-//        }
-//        if(left > 100 || right > 100){
-//
-//  //Serial.println("Waiting for an ISO14443A Card ...");
-//  j=2;
-//  
-//} 
-//}
+  while(j==1){
+  int left=cs_4_6.capacitiveSensor(30);
+  int right=cs_8_10.capacitiveSensor(30);
+  if(left < 100 && right < 100){
+  //Serial.println(left);
+  //Serial.println(right);
+}
+ if(left > 100){
+          Serial.println("left");
+          j=2;
+        }
+        if(right > 100){
+          Serial.println("right");
+          j=2;
+        }
+        if(left > 100 && right > 100){
+          Serial.println("invalid");
+        }
+        if(left > 100 || right > 100){
+
+  Serial.println("Waiting for an ISO14443A Card ...");
+  j=2;
+  
+} 
+}
 }
 
 void(* resetFunc) (void) = 0;
@@ -229,7 +229,7 @@ void loop(void) {
         
         if (memcmp(data1,data,16) == 0){
             name="Joe";
-            //Serial.println("Hello ");Serial.println(name);
+            Serial.println("Hello ");Serial.println(name);
             count++;
             /*
             if(rightside > 100){
@@ -248,7 +248,7 @@ void loop(void) {
          
           if (memcmp(data2,data,16) == 0){
             name="Laurence";
-            //Serial.println("Hello ");Serial.println(name);
+            Serial.println("Hello ");Serial.println(name);
             count++;
             /*
             if(rightside > 100){
@@ -267,7 +267,7 @@ void loop(void) {
 
           if(memcmp(data3,data,16) == 0){
             name="Rob";
-            //Serial.println("Hello ");Serial.println(name);
+            Serial.println("Hello ");Serial.println(name);
             count++;
             /*
             if(rightside > 100){
@@ -286,7 +286,7 @@ void loop(void) {
 
           if(memcmp(data4,data,16) == 0){
             name="Sloan";
-            //Serial.println("Hello ");Serial.println(name);
+            Serial.println("Hello ");Serial.println(name);
             count++;
             /*
             if(rightside > 100){
@@ -305,7 +305,7 @@ void loop(void) {
 
           if(memcmp(data5,data,16) == 0){
             name="Bob";
-            //Serial.println("Hello ");Serial.println(name);
+            Serial.println("Hello ");Serial.println(name);
             count++;
             /*
             if(rightside > 100){
@@ -324,7 +324,7 @@ void loop(void) {
 
           if(memcmp(data6,data,16) == 0){
             name="Joelle";
-            //Serial.println("Hello ");Serial.println(name);
+            Serial.println("Hello ");Serial.println(name);
             count++;
             /*
             if(rightside > 100){
@@ -343,7 +343,7 @@ void loop(void) {
 
           if(memcmp(data7,data,16) == 0){
             name="James";
-            //Serial.println("Hello ");Serial.println(name);
+            Serial.println("Hello ");Serial.println(name);
             count++;
             /*
             if(rightside > 100){
@@ -362,7 +362,7 @@ void loop(void) {
           
           if(memcmp(data8,data,16) == 0){
             name="Christina";
-            //Serial.println("Hello ");Serial.println(name);
+            Serial.println("Hello ");Serial.println(name);
             count++;
             /*
             if(rightside > 100){
@@ -381,7 +381,7 @@ void loop(void) {
           
           if(memcmp(data9,data,16) == 0){
             name="Colleen";
-            //Serial.println("Hello ");Serial.println(name);
+            Serial.println("Hello ");Serial.println(name);
             count++;
             /*
             if(rightside > 100){
@@ -400,7 +400,7 @@ void loop(void) {
           
           if(memcmp(data10,data,16) == 0){
             name="Nae";
-            //Serial.println("Hello ");Serial.println(name);
+            Serial.println("Hello ");Serial.println(name);
             count++;
             /*
             if(rightside > 100){
@@ -453,8 +453,8 @@ void loop(void) {
           else
           {
             // Oops ... something happened
-            //Serial.print("Block ");Serial.print(currentblock, DEC);
-            //Serial.println(" unable to read this block");
+            Serial.print("Block ");Serial.print(currentblock, DEC);
+            Serial.println(" unable to read this block");
           }
         }
       }
@@ -471,7 +471,7 @@ void loop(void) {
     int k=1;
     // resets the card reader when it gets a HGIGH the signal would be coming from an outside source (RPi) to signal the end of the game
     if(count >= 2){
-      //Serial.println("You may only have 2 players at a time");
+      Serial.println("You may only have 2 players at a time");
       //digitalWrite(13,HIGH);
 //      while(k==1){
 //      //if (sensorValue < 100){
@@ -495,7 +495,7 @@ void loop(void) {
   Serial.flush();
   
   delay(500);
-  //Serial.println("next player log in");
+  Serial.println("next player log in");
   
 }
 }
