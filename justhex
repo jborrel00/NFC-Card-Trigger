@@ -88,33 +88,61 @@ void setup(void) {
   cs_8_10.set_CS_AutocaL_Millis(0xFFFFFFFF);
   Serial.begin(115200);
   //Serial.println("pick a side");
-  delay(2000);
+  digitalWrite(led,HIGH);
+  delay(200);
+  digitalWrite(led,LOW);
+  delay(200);
+  delay(1000);
   int j=1;
-//  while(j==1){
-//  int left=cs_4_6.capacitiveSensor(30);
-//  int right=cs_8_10.capacitiveSensor(30);
-//  if(left < 100 && right < 100){
-//  //Serial.println(left);
-//  //Serial.println(right);
-//}
-// if(left > 100){
-//          //Serial.println("left");
-//          j=2;
-//        }
-//        if(right > 100){
-//          //Serial.println("right");
-//          j=2;
-//        }
-//        if(left > 100 && right > 100){
-//          //Serial.println("invalid");
-//        }
-//        if(left > 100 || right > 100){
-//
+  while(j==1){
+  int left=cs_4_6.capacitiveSensor(30);
+  int right=cs_8_10.capacitiveSensor(30);
+  if(left < 100 && right < 100){
+  //Serial.println(left);
+  //Serial.println(right);
+}
+ if(left > 100){
+          //Serial.println("left");
+          digitalWrite(led,HIGH);
+          delay(100);
+          digitalWrite(led,LOW);
+          delay(100);
+          digitalWrite(led,HIGH);
+          delay(100);
+          digitalWrite(led,LOW);
+          delay(100);
+          j=2;
+        }
+        if(right > 100){
+          //Serial.println("right");
+          digitalWrite(led,HIGH);
+          delay(100);
+          digitalWrite(led,LOW);
+          delay(100);
+          j=2;
+        }
+        if(left > 100 && right > 100){
+          //Serial.println("invalid");
+          digitalWrite(led,HIGH);
+          delay(100);
+          digitalWrite(led,LOW);
+          delay(100);
+          digitalWrite(led,HIGH);
+          delay(100);
+          digitalWrite(led,LOW);
+          delay(100);
+          digitalWrite(led,HIGH);
+          delay(100);
+          digitalWrite(led,LOW);
+          delay(100);
+        }
+        if(left > 100 || right > 100){
+
 //  //Serial.println("Waiting for an ISO14443A Card ...");
 //  j=2;
 //  
-//} 
-//}
+} 
+}
 }
 
 void(* resetFunc) (void) = 0;
@@ -208,23 +236,23 @@ void loop(void) {
         //////// if data1=data, print Verification succeeded and flash LED on pin 13
         
         //Serial.println("Verifying...");
-        uint8_t data1[16]={'j','o','e',0,0,0,0,0,0,0,0,0,0,0,0,0};
-        uint8_t data2[16]={'l','a','u','r','e','n','c','e',0,0,0,0,0,0,0,0};
-        uint8_t data3[16]={'r','o','b',0,0,0,0,0,0,0,0,0,0,0,0,0};
-        uint8_t data4[16]={'s','l','o','a','n',0,0,0,0,0,0,0,0,0,0,0};
-        uint8_t data5[16]={'b','o','b',0,0,0,0,0,0,0,0,0,0,0,0,0};
-        uint8_t data6[16]={'j','o','e','l','l','e',0,0,0,0,0,0,0,0,0,0};
-        uint8_t data7[16]={'j','a','m','e','s',0,0,0,0,0,0,0,0,0,0,0};
-        uint8_t data8[16]={'c','h','r','i','s','t','i','n','a',0,0,0,0,0,0,0};
-        uint8_t data9[16]={'c','o','l','l','e','e','n',0,0,0,0,0,0,0,0,0};
-        uint8_t data10[16]={'n','a','e',0,0,0,0,0,0,0,0,0,0,0,0,0};
+        //uint8_t data1[16]={'j','o','e',0,0,0,0,0,0,0,0,0,0,0,0,0};
+        //uint8_t data2[16]={'l','a','u','r','e','n','c','e',0,0,0,0,0,0,0,0};
+        //uint8_t data3[16]={'r','o','b',0,0,0,0,0,0,0,0,0,0,0,0,0};
+        //uint8_t data4[16]={'s','l','o','a','n',0,0,0,0,0,0,0,0,0,0,0};
+        //uint8_t data5[16]={'b','o','b',0,0,0,0,0,0,0,0,0,0,0,0,0};
+        //uint8_t data6[16]={'j','o','e','l','l','e',0,0,0,0,0,0,0,0,0,0};
+        //uint8_t data7[16]={'j','a','m','e','s',0,0,0,0,0,0,0,0,0,0,0};
+        //uint8_t data8[16]={'c','h','r','i','s','t','i','n','a',0,0,0,0,0,0,0};
+        //uint8_t data9[16]={'c','o','l','l','e','e','n',0,0,0,0,0,0,0,0,0};
+        //uint8_t data10[16]={'n','a','e',0,0,0,0,0,0,0,0,0,0,0,0,0};
 
         //int leftside = digitalRead(button_left); for real buttons
         //int rightside = digitalRead(button_right); for real buttons
         //left side button is in pin 10, right side button is in pin 11
         //const char* name;
 
-        
+        /*
         String name;
         
         if (memcmp(data1,data,16) == 0){
@@ -416,25 +444,8 @@ void loop(void) {
             //digitalWrite(4,HIGH);
             //delay(800);
           }
+          */
 
-  /*
-        if (memcmp(data1,data,16) == 0)
-        {
-         Serial.println("Verification succeeded");
-        digitalWrite(13, HIGH);
-        delay(500);
-        digitalWrite(13, LOW);
-        Serial.println("");
-        }
-        else
-        {
-         Serial.println("Verification failed");
-         digitalWrite(13,LOW);
-         Serial.println("");
-         }
-
-        
-        */
           if (success)
           {
 //            // Read successful
